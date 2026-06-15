@@ -1,0 +1,89 @@
+# OpenFusion config
+# Generated starter config. By default OpenFusion prefers logged-in local CLIs
+# (Codex / Claude / Gemini) so new users do not need an API key on day one.
+# Run `openfusion doctor` to verify the detected runners.
+
+max_jobs = 4
+
+[[runners]]
+name = "codex"
+kind = "codex"
+model = "gpt-5.5"
+weight = 1.2
+timeout_seconds = 180
+reasoning_effort = "high"
+reasoning_budget_tokens = 2048
+
+[[runners]]
+name = "claude"
+kind = "claude"
+model = "opus-4.8"
+weight = 1.1
+timeout_seconds = 180
+reasoning_effort = "high"
+reasoning_budget_tokens = 2048
+
+# Optional Gemini CLI runner. Enabled automatically by `openfusion init` when `gemini` is on PATH.
+# [[runners]]
+# name = "gemini"
+# kind = "gemini"
+# model = "gemini-3-pro"
+# weight = 1.0
+# timeout_seconds = 180
+
+# Optional API runner. Store with: openfusion keys set openrouter
+# [[runners]]
+# name = "openrouter"
+# kind = "openrouter"
+# model = "qwen/qwen3.5-flash-02-23"
+# api_key_ref = "openrouter"
+# api_key_env = "OPENROUTER_API_KEY"
+# weight = 0.8
+# timeout_seconds = 60
+# temperature = 0.2
+# max_tokens = 900
+
+# Optional local model runner. Start with: ollama serve && ollama pull llama3.2
+# [[runners]]
+# name = "ollama"
+# kind = "ollama"
+# base_url = "http://localhost:11434"
+# model = "llama3.2"
+# weight = 0.3
+
+# Optional OpenAI-compatible endpoint (OpenAI, LiteLLM, vLLM, LM Studio, LocalAI, etc.)
+# [[runners]]
+# name = "local-openai"
+# kind = "openai_compat"
+# base_url = "http://127.0.0.1:1234/v1"
+# api_key_env = "LOCAL_LLM_API_KEY"
+# model = "local-model"
+# weight = 0.4
+
+[[strategies]]
+name = "consensus"
+type = "consensus"
+runners = ["codex", "claude"]
+judge = "codex"
+
+[[strategies]]
+name = "best-of-n"
+type = "best_of_n"
+runners = ["codex*3", "claude"]
+judge = "codex"
+
+[[strategies]]
+name = "review"
+type = "review"
+runners = ["codex", "claude"]
+judge = "codex"
+
+[[strategies]]
+name = "fallback"
+type = "fallback"
+runners = ["codex", "claude"]
+
+[[strategies]]
+name = "race"
+type = "race"
+runners = ["codex", "claude"]
